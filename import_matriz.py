@@ -20,17 +20,32 @@ for i in range(len(texto)):          #mostra quedrando em linhas
 
 arq.close() #comando para fechar o arquivo
 
+def obter_particoes(A,b):
 
+    return I_b, I_n
+
+def primal_simplex(A,x,b,c):
+
+    return x_x_b
 # variavéis que precisarei: 
 
-A = []
+A = [] # matrix_Ax
+A = matriz[:][:-1]
+b = []
+b = matriz[:][len(matriz[1])-1]
+
+I_b = [] #indice das variáveis que estão na partição básica
+I_n = [] #indice das variáveis que estão na partição não básica
 A_inv = []
 
-B = []
+I_b, I_n=obter_particoes(A, b)
+
+
+B = [] #Matrix_Básica
 print(B.T)
-b = []
-# m== numero de equações
-# n== número de variáveis
+
+m # numero de equações
+n # número de variáveis
 #resolvendo sistema de equações lineares:
 #Solve the system of equations x0 + 2 * x1 = 1 and 3 * x0 + 5 * x1 = 2:
 #a = np.array([[1, 2], [3, 5]])
@@ -38,21 +53,24 @@ b = []
 #x = np.linalg.solve(a, b)
 #x
 
-N = []
+N = [] # matrix_NãoBásica
 a_n = [] # a_n[] são as colunas de N
 x = []
-x_x_b = []
+x_x_b = [] # solução_avaliada
 x_x_b = np.multiply(np.linalg.inv(B),b)
 if x_x_b >= 0:
     print("solução básica viável")
-Lambda = []
-I_b = []
-I_n = []
-c = []
-c_b = []
-c_n = []
-c_xapeu_n = c_n - Lambda.T*a_n
-y = 0
-c_xapeu_k = min{c_n}
-E_xapeu = min{x_x_b[]/y[]}
-np.linalg.inv(B)
+Lambda = [] # vetor multiplicador simplex
+
+c = [] # vetor de custos
+c_b = []  # vetor de coeficientes das variáveis básicas
+c_n = [] # vetor de coeficientes das variáveis não básicas
+c_xapeu_n = c_n[:] - np.multiply(Lambda.T,a_n[:]) # custos relativos não básicos
+y = [] # direção do simplex
+y[:] = np.multiply(np.linalg.inv(B),N[:]) # Errado. quero pegar as colunas de N
+c_xapeu_k = [] # teste de otimalidade nas não básicas
+ min{c_n}
+E_xapeu = []
+E_xapeu[:] = x_x_b[:]/y[:]
+# np.linalg.inv(B)
+
