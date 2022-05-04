@@ -29,15 +29,26 @@ A_inv = []
 B = []
 print(B.T)
 b = []
+# m== numero de equações
+# n== número de variáveis
+#resolvendo sistema de equações lineares:
+#Solve the system of equations x0 + 2 * x1 = 1 and 3 * x0 + 5 * x1 = 2:
+#a = np.array([[1, 2], [3, 5]])
+#b = np.array([1, 2])
+#x = np.linalg.solve(a, b)
+#x
 
 N = []
 a_n = [] # a_n[] são as colunas de N
 x = []
 x_x_b = []
 x_x_b = np.multiply(np.linalg.inv(B),b)
+if x_x_b >= 0:
+    print("solução básica viável")
 Lambda = []
 I_b = []
 I_n = []
+c = []
 c_b = []
 c_n = []
 c_xapeu_n = c_n - Lambda.T*a_n
