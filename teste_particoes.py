@@ -1,4 +1,5 @@
 import numpy as np
+from itertools import combinations
 
 
 def atualizeBN(A, I_b, I_n):
@@ -25,11 +26,47 @@ def atualizeBN(A, I_b, I_n):
 def obter_particoes_iniciais(A, b):
 
     len(A)
-    I_b = np.zeros((len(A)), dtype=int)
-    I_n = np.zeros((len(A[1])-len(A)), dtype=int)
+    I_b = []
+    I_n = []
 
-    x_x_b = []  # solução_avaliada
-    x_x_b = np.multiply(np.linalg.inv(B), b)
+    n = len(A[1])
+    m = len(A)
+
+    lista_aux = np.arange(n)
+    lista_aux += 1
+
+    comb = combinations(lista_aux, m)
+
+    for i_b in comb:
+        B = []
+        for linhaA in A:
+            linhaB = []
+            for j in i_b:
+                # print(j)
+                linhaB.append(linhaA[j-1])
+                # print(linhaB)
+            B.append(linhaB)
+
+        Binv = np.linalg.inv(np.matrix(B))
+        x_x_b = []  # solução_avaliada
+        x_x_b = Binv.dot(np.matrix(b).getT())
+        print("olhaquii o x chapeu: ", x_x_b)
+        if x_x_b.min() >= 0:
+            print("Conjunto legal!!", i_b)
+            for i_n in lista_aux:
+                if i_b.count(i_n) == 0:
+                    print(i_n, " já está nao está partição básica")
+                    I_n.append(i_n)
+                else:
+                    I_b.append(i_n)
+
+            break
+
+    # Binv = np.linalg.inv(np.matrix(B))
+
+    # print(Binv)
+    # x_x_b = []  # solução_avaliada
+    # x_x_b = Binv.dot(np.matrix(b).getT())
 
     return I_b, I_n
 
@@ -41,15 +78,20 @@ A = np.array([[1, 1, 1, 0, 0],
 for l in A:
     print(l)
 
+n = len(A[1])
+m = len(A)
+# m # numero de equações
+# n # número de variáveis
 b = np.array([6, 4, 3])
 I_b = []  # indice das variáveis que estão na partição básica
 I_n = []  # indice das variáveis que estão na partição não básica
 # A_inv = []
 print("ola")
 
-I_b = [1, 2, 5]
-I_n = [3, 4]
-#I_b, I_n = obter_particoes_iniciais(A, b)
+I_b, I_n = obter_particoes_iniciais(A, b)
+# I_b = [1, 2, 5]
+# I_n = [3, 4]
+# I_b, I_n = obter_particoes_iniciais(A, b)
 print("partições básicas:", I_b)
 print("partições não básicas:", I_n)
 
@@ -62,15 +104,16 @@ print(B)
 
 print("matriz não básica")
 print(N)
-Binv = np.linalg.inv(np.matrix(B))
+Binv = np.linalg.inv(B)
 
 print(Binv)
 x_x_b = []  # solução_avaliada
 x_x_b = Binv.dot(np.matrix(b).getT())
 
-if x_x_b.all() >= 0:
+if x_x_b.min() >= 0:
     print("Conjunto legal!!")
-
+print("m:", m)
+print("n:", n)
 print(x_x_b)
 
 """.git\A = np.zeros( (1,1) ) # matrix_Ax
@@ -88,14 +131,12 @@ I_b, I_n=obter_particoes(A, b)
 B = np.zeros( (1,1) ) #Matrix_Básica
 print(B.T)
 
-m # numero de equações
-n # número de variáveis
-#resolvendo sistema de equações lineares:
-#Solve the system of equations x0 + 2 * x1 = 1 and 3 * x0 + 5 * x1 = 2:
-#a = np.array([[1, 2], [3, 5]])
-#b = np.array([1, 2])
-#x = np.linalg.solve(a, b)
-#x
+# resolvendo sistema de equações lineares:
+# Solve the system of equations x0 + 2 * x1 = 1 and 3 * x0 + 5 * x1 = 2:
+# a = np.array([[1, 2], [3, 5]])
+# b = np.array([1, 2])
+# x = np.linalg.solve(a, b)
+# x
 
 N = np.zeros( (1,1) ) # matrix_NãoBásica
 a_n = np.arange(1) # a_n[] são as colunas de N
