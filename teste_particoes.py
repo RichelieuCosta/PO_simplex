@@ -1,6 +1,12 @@
 import numpy as np
 from itertools import combinations
 
+# 1) escrever modelo dual na tela - fácil, mas pendente
+# 2) simplex  - quase ok
+# 3) determinar valores da solução primal - quase ok
+# 4) determinar valores da solução dual - acho que vai ser super tranquilo depois de terminar de checar o primal
+# 5) determinar ranges do lado direito - checar slides de anand pra comparar com anotações da disciplna da graduação
+
 
 def atualizeBN(A, I_b, I_n):
     B = []
@@ -32,8 +38,8 @@ def obter_particoes_iniciais(A, b):
     n = len(A[1])
     m = len(A)
 
-    lista_aux = np.arange(n)
-    lista_aux += 1
+    lista_aux = np.arange(n)  # inicia vetor pelo valor 0
+    lista_aux += 1  # Para começar pelo valor 1
 
     comb = combinations(lista_aux, m)
 
@@ -50,12 +56,14 @@ def obter_particoes_iniciais(A, b):
         Binv = np.linalg.inv(np.matrix(B))
         x_x_b = []  # solução_avaliada
         x_x_b = Binv.dot(np.matrix(b).getT())
-        print("olhaquii o x chapeu: ", x_x_b)
+        # print("O x chapeu: ", x_x_b)
         if x_x_b.min() >= 0:
-            print("Conjunto legal!!", i_b)
+            print("Conjunto legal pra iniciar!!", i_b)
+            print("O x chapeu que passou: ")
+            print(x_x_b)
             for i_n in lista_aux:
                 if i_b.count(i_n) == 0:
-                    print(i_n, " Não está está na partição básica")
+                    # print(i_n, " Não está está na partição básica")
                     I_n.append(i_n)
                 else:
                     I_b.append(i_n)
@@ -97,18 +105,25 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     # m # numero de equações
     # n # número de variáveis
 
-    print("partições básicas:", I_b)
-    print("partições não básicas:", I_n)
+    print("partições básicas:")
+    print(I_b)
+    print("partições não básicas:")
+    print(I_n)
 
     B, N = atualizeBN(A, I_b, I_n)
     c_b, c_n = obter_custos(I_b, I_n, c_t)
 
-    print("b:", np.matrix(b).getT())
+    print("b:")
 
-    print("matriz Básica:", B)
-    print("matriz não básica:", N)
+    print(np.matrix(b).getT())
+
+    print("matriz Básica:")
+    print(B)
+    print("matriz não básica:")
+    print(N)
     B_inv = np.linalg.inv(B)
-    print("B_inv:", B_inv)
+    print("B_inv:")
+    print(B_inv)
 
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
@@ -120,9 +135,9 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     for j in range(len(I_n)):
         # custos relativos não básicos
         c_xapeu_n[j] = c_n[j] - lambda_t.dot(obter_coluna(N, j))
-        print("c chapeu J:", j, c_xapeu_n[j])
+        # print("c chapeu J:", j, c_xapeu_n[j])
 
-    print(c_xapeu_n)
+    print("c xapeu", c_xapeu_n)
 
     y = np.arange(len(A))
 
@@ -146,7 +161,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
                 else:
                     print("a kaézima variável não básica NÃO vai entrar")
             else:
-                print("acho que deu certo!!")
+                print("acho que deu certo!! será??")
     else:
         print("Solução ótima, acabou!")
         return c_xapeu_n, I_b, I_n, x_x_b
@@ -157,7 +172,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
         if y[i] != 0:
             x_b_l[i] = x_x_b[i]/y[i]
 
-    #x_b_l = x_x_b[:]/y[:]
+    # x_b_l = x_x_b[:]/y[:]
     print("xxbl: ", x_b_l)
     for l in range(len(I_b)):
         print("checando o lanço para sair da fase 2")
@@ -171,7 +186,6 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     return c_xapeu_n, I_b, I_n, x_x_b
 
 
-print("oxente 1 ")
 c_t = np.array([-2, -1, 0, 0, 0])
 A = np.array([[1, 1, 1, 0, 0],
               [1, 0, 0, 1, 0],
@@ -181,18 +195,16 @@ A = np.array([[1, 1, 1, 0, 0],
 b = np.array([4, 3, 7/2])
 
 
-print("oxente 2 ")
 I_b, I_n = obter_particoes_iniciais(A, b)
 
 
 x = 0
 while(x == 0):
-    print("eeei", I_b)
     c_xapeu_n, I_b, I_n, x_x_b = primal_simplex(A, b, c_t, I_b, I_n)
     if c_xapeu_n.min() >= 0:
         print("i_b: ", I_b)
         print("x_x_b: ", x_x_b)
-        print("acaboooooou")
+        print("fim")
         x = 1
     else:
         print("Ainda não acabou")
