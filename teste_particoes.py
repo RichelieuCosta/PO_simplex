@@ -2,8 +2,8 @@ import numpy as np
 from itertools import combinations
 
 # 1) escrever modelo dual na tela - fácil, mas pendente
-# 2) simplex  - quase ok
-# 3) determinar valores da solução primal - quase ok
+# 2) simplex  -  ok
+# 3) determinar valores da solução primal -  ok
 # 4) determinar valores da solução dual - acho que vai ser super tranquilo depois de terminar de checar o primal
 # 5) determinar ranges do lado direito - checar slides de anand pra comparar com anotações da disciplna da graduação
 
@@ -11,7 +11,7 @@ from itertools import combinations
 def atualizeBN(A, I_b, I_n):
     B = []
     N = []
-    #print("cuidado agora!!!")
+    # print("cuidado agora!!!")
     for linhaA in A:
         linhaB = []
         linhaN = []
@@ -96,8 +96,8 @@ def obter_coluna(M, j):
     coluna = []
     for linha in M:
         coluna.append(linha[j])  # coluna.append(linha[j-1]) #errei feio aqui.
-    #print("função de obter coluna")
-    #print("Perdi a minha noite inteira por conta dessa porqueira")
+    # print("função de obter coluna")
+    # print("Perdi a minha noite inteira por conta dessa porqueira")
     # print(coluna)
     # print(np.matrix(coluna).getT())
 
@@ -214,34 +214,54 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     return c_xapeu_n, I_b, I_n, x_x_b
 
 
-#c_t = np.array([-2, -1, 0, 0, 0])
-# A = np.array([[1, 1, 1, 0, 0],
-#              [1, 0, 0, 1, 0],
-#              [0, 1, 0, 0, 1]])
+c_t = np.array([-2, -1, 0, 0, 0])
+A = np.array([[1, 1, 1, 0, 0],
+              [1, 0, 0, 1, 0],
+              [0, 1, 0, 0, 1]])
 
 
-#b = np.array([4, 3, 7/2])
+b = np.array([4, 3, 7/2])
 
-c_t = np.array([-3, -5, 0, 0, 0])
-A = np.array([[1, 0, 1, 0, 0],
-              [0, 1, 0, 1, 0],
-              [3, 2, 0, 0, 1]])
+# c_t = np.array([-3, -5, 0, 0, 0])
+# A = np.array([[1, 0, 1, 0, 0],
+#             [0, 1, 0, 1, 0],
+#             [3, 2, 0, 0, 1]])
 
 
-b = np.array([4, 6, 18])
+# b = np.array([4, 6, 18])
 
 I_b, I_n = obter_particoes_iniciais(A, b)
 
-#I_b = [3, 1, 5]
-#I_n = [4, 2]
+# I_b = [3, 1, 5]
+# I_n = [4, 2]
+c_xapeu_n = []
+x_x_b = []
 
 x = 0
 while(x == 0):
     c_xapeu_n, I_b, I_n, x_x_b = primal_simplex(A, b, c_t, I_b, I_n)
     if c_xapeu_n.min() >= 0:
         print("i_b: ", I_b)
-        print("x_x_b: ", x_x_b)
+        print("i_n: ", I_n)
+        print("x_x_b: ")
+        print(x_x_b)
         print("fim")
         x = 1
     else:
         print("Ainda não acabou")
+
+# vetor de variáveis do tamanho da quantidade de variáveis
+x_final = np.arange(len(A[1]), dtype=float)
+
+print(x_final)
+for i in range(len(I_n)):
+    x_final[I_n[i]-1] = 0
+# print(x_final)
+for i in range(len(I_b)):
+    x_final[I_b[i]-1] = x_x_b[i].copy()
+# print(x_final)
+
+# x_final[0] = 2
+print("vetor X na sequencia original: ", x_final)
+print("vetor de custos: ", c_t)
+print("valor da solução ótima: ", x_final.dot(c_t))
