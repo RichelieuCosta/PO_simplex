@@ -63,14 +63,6 @@ def obter_particoes_iniciais(A, b):
             break
     return I_b, I_n
 
-    # Binv = np.linalg.inv(np.matrix(B))
-
-    # print(Binv)
-    # x_x_b = []  # solução_avaliada
-    # x_x_b = Binv.dot(np.matrix(b).getT())
-
-    return I_b, I_n
-
 
 def obter_custos(I_b, I_n, c_t):
     c_b = []
@@ -111,20 +103,15 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     B, N = atualizeBN(A, I_b, I_n)
     c_b, c_n = obter_custos(I_b, I_n, c_t)
 
-    print("Saiu da função de atualização de BN")
-
     print("b:", np.matrix(b).getT())
-    print("matriz Básica:")
-    print(B)
 
-    print("matriz não básica")
-    print(N)
+    print("matriz Básica:", B)
+    print("matriz não básica:", N)
     B_inv = np.linalg.inv(B)
-    print("B_inv")
-    print(B_inv)
+    print("B_inv:", B_inv)
+
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
-
     lambda_t = np.matrix(c_b).dot(B_inv)
 
     print("valor de lambda: ", lambda_t)
@@ -132,23 +119,28 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     c_xapeu_n = np.arange(len(I_n))
     for j in range(len(I_n)):
         # custos relativos não básicos
-        # c_xapeu_n[j] = c_n[j] - np.multiply(lambda_t, obter_coluna(N, j))
         c_xapeu_n[j] = c_n[j] - lambda_t.dot(obter_coluna(N, j))
         print("c chapeu J:", j, c_xapeu_n[j])
 
     print(c_xapeu_n)
+
     y = np.arange(len(A))
+
     if c_xapeu_n.min() < 0:
         for k in range(len(I_n)):
             print("valor de k: ", k)
             if c_xapeu_n[k] < 0:
                 print("a kaézima variável não básica vai entrar na base?")
                 if c_xapeu_n.min() == c_xapeu_n[k]:
-                    print("a kaézima variável não básica VAI entrar")
+                    print(
+                        "a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
                     index_entrar = k
                     for k in range(len(I_n)):
                         y = B_inv.dot(obter_coluna(N, k))
                     print("y: ", y)
+                    if y.any() <= 0:
+                        print("não tem solução ótima finita!")
+                        return [0, 0, 0], I_b, I_n, x_x_b
                     break
 
                 else:
@@ -157,9 +149,9 @@ def primal_simplex(A, b, c_t, I_b, I_n):
                 print("acho que deu certo!!")
     else:
         print("Solução ótima, acabou!")
-        return c_xapeu_n, I_b, I_n
+        return c_xapeu_n, I_b, I_n, x_x_b
 
-    print("não foi dessa vez")
+    print("não foi dessa vez. Próxima iteração!")
     x_b_l = np.arange(len(y))
     for i in range(len(y)):
         if y[i] != 0:
@@ -176,7 +168,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     aux_troca = I_b[index_sair]
     I_b[index_sair] = I_n[index_entrar]
     I_n[index_entrar] = aux_troca
-    return c_xapeu_n, I_b, I_n
+    return c_xapeu_n, I_b, I_n, x_x_b
 
 
 print("oxente 1 ")
@@ -196,8 +188,10 @@ I_b, I_n = obter_particoes_iniciais(A, b)
 x = 0
 while(x == 0):
     print("eeei", I_b)
-    c_xapeu_n, I_b, I_n = primal_simplex(A, b, c_t, I_b, I_n)
+    c_xapeu_n, I_b, I_n, x_x_b = primal_simplex(A, b, c_t, I_b, I_n)
     if c_xapeu_n.min() >= 0:
+        print("i_b: ", I_b)
+        print("x_x_b: ", x_x_b)
         print("acaboooooou")
         x = 1
     else:
