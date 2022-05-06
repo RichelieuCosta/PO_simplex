@@ -175,7 +175,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     # x_b_l = x_x_b[:]/y[:]
     print("xxbl: ", x_b_l)
     for l in range(len(I_b)):
-        print("checando o lanço para sair da fase 2")
+        #print("checando o lanço para sair da fase 2")
         if x_b_l.min() == x_b_l[l] and y[l] != 0:
             print("A variável a sair da base será: ", I_b[l], "de index: ", l)
             index_sair = l
