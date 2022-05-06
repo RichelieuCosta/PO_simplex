@@ -11,7 +11,7 @@ from itertools import combinations
 def atualizeBN(A, I_b, I_n):
     B = []
     N = []
-    print("cuidado agora!!!")
+    #print("cuidado agora!!!")
     for linhaA in A:
         linhaB = []
         linhaN = []
@@ -25,7 +25,7 @@ def atualizeBN(A, I_b, I_n):
             linhaN.append(linhaA[j-1])
             # print(linhaN)
         N.append(linhaN)
-    print(np.matrix(N).getT().getT())
+    # print(np.matrix(N).getT().getT())
     return np.asarray(B), np.asarray(N)
 
 
@@ -56,8 +56,13 @@ def obter_particoes_iniciais(A, b):
         Binv = np.linalg.inv(np.matrix(B))
         x_x_b = []  # solução_avaliada
         x_x_b = Binv.dot(np.matrix(b).getT())
-        # print("O x chapeu: ", x_x_b)
-        if x_x_b.min() >= 0:
+        print("O x chapeu: ", x_x_b)
+        aux_menor = x_x_b[0]
+        # if x_x_b.min() >= 0:
+        for x_x_b_i in x_x_b:
+            if x_x_b_i < aux_menor:
+                aux_menor = x_x_b_i
+        if aux_menor >= 0:
             print("Conjunto legal pra iniciar!!", i_b)
             print("O x chapeu que passou: ")
             print(x_x_b)
@@ -91,8 +96,8 @@ def obter_coluna(M, j):
     coluna = []
     for linha in M:
         coluna.append(linha[j])  # coluna.append(linha[j-1]) #errei feio aqui.
-    print("função de obter coluna")
-    print("Perdi a minha noite inteira por conta dessa porqueira")
+    #print("função de obter coluna")
+    #print("Perdi a minha noite inteira por conta dessa porqueira")
     # print(coluna)
     # print(np.matrix(coluna).getT())
 
@@ -132,6 +137,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
     print("custos das variáves básicas: ", c_b)
+    print("custos das variáves não básicas: ", c_n)
     lambda_t = np.matrix(c_b).dot(B_inv)
 
     print("valor de lambda: ", lambda_t)
@@ -160,7 +166,11 @@ def primal_simplex(A, b, c_t, I_b, I_n):
                     for k in range(len(I_n)):
                         y = B_inv.dot(obter_coluna(N, k))
                     print("y: ", y)
-                    if y.any() <= 0:
+                    aux_count = 0
+                    for y_i in y:
+                        if y_i <= 0:
+                            y_i += 1
+                    if aux_count == len(y):
                         print("não tem solução ótima finita!")
                         return [0, 0, 0], I_b, I_n, x_x_b
                     break
@@ -174,18 +184,29 @@ def primal_simplex(A, b, c_t, I_b, I_n):
         return c_xapeu_n, I_b, I_n, x_x_b
 
     print("não foi dessa vez. Próxima iteração!")
-    x_b_l = np.arange(len(y))
+    print("x_x_b: ", x_x_b)
+    epsilon_xapeu = np.arange(len(y))
     for i in range(len(y)):
-        if y[i] != 0:
-            x_b_l[i] = x_x_b[i]/y[i]
+        if y[i] > 0:
+            epsilon_xapeu[i] = x_x_b[i]/y[i]
 
-    # x_b_l = x_x_b[:]/y[:]
-    print("xxbl: ", x_b_l)
-    for l in range(len(I_b)):
-        #print("checando o lanço para sair da fase 2")
-        if x_b_l.min() == x_b_l[l] and y[l] != 0:
-            print("A variável a sair da base será: ", I_b[l], "de index: ", l)
-            index_sair = l
+    aux_MIN_epsilon_xapeu = 0
+    index_sair = 0
+    for i in range(len(y)):
+        if y[i] > 0:
+            # por falta de prática com python, escolhi essa forma de pegar o menor valor de epsilon_xapeu
+            aux_MIN_epsilon_xapeu = epsilon_xapeu[i]
+            index_sair = i
+
+    for i in range(len(y)):
+        if y[i] > 0 and epsilon_xapeu[i] < aux_MIN_epsilon_xapeu:
+            aux_MIN_epsilon_xapeu = epsilon_xapeu[i]
+            index_sair = i
+    # epsilon_xapeu = x_x_b[:]/y[:]
+    print("   'epsilon_xapeu': ", epsilon_xapeu)
+    print("epsilon_xapeu menor: ", epsilon_xapeu[index_sair])
+    print("A variável a sair da base será: ",
+          I_b[index_sair], "de index: ", index_sair)
 
     aux_troca = I_b[index_sair]
     I_b[index_sair] = I_n[index_entrar]
@@ -193,19 +214,26 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     return c_xapeu_n, I_b, I_n, x_x_b
 
 
-c_t = np.array([-2, -1, 0, 0, 0])
-A = np.array([[1, 1, 1, 0, 0],
-              [1, 0, 0, 1, 0],
-              [0, 1, 0, 0, 1]])
+#c_t = np.array([-2, -1, 0, 0, 0])
+# A = np.array([[1, 1, 1, 0, 0],
+#              [1, 0, 0, 1, 0],
+#              [0, 1, 0, 0, 1]])
 
 
-b = np.array([4, 3, 7/2])
+#b = np.array([4, 3, 7/2])
+
+c_t = np.array([-3, -5, 0, 0, 0])
+A = np.array([[1, 0, 1, 0, 0],
+              [0, 1, 0, 1, 0],
+              [3, 2, 0, 0, 1]])
 
 
-#I_b, I_n = obter_particoes_iniciais(A, b)
+b = np.array([4, 6, 18])
 
-I_b = [3, 1, 5]
-I_n = [4, 2]
+I_b, I_n = obter_particoes_iniciais(A, b)
+
+#I_b = [3, 1, 5]
+#I_n = [4, 2]
 
 x = 0
 while(x == 0):
@@ -217,64 +245,3 @@ while(x == 0):
         x = 1
     else:
         print("Ainda não acabou")
-
-    # y=np.arange(len(I_b))
-    # for k in range(len(I_n)):
-    #    # custos relativos não básicos
-    #    #c_xapeu_n[j] = c_n[j] - np.multiply(lambda_t, obter_coluna(N, j))
-    #    c_xapeu_n[j] = c_n[j] - B_inv.dot(obter_coluna(N, j))
-    #    print("c chapeu J:", j, c_xapeu_n[j])
-    #    y[:] = np.multiply(np.linalg.inv(B),N[:])
-
-
-# if x_x_b.min() >= 0:
-#    print("Conjunto legal!!")
-# print("m:", m)
-# print("n:", n)
-# print(x_x_b)
-
-
-""".git\A = np.zeros( (1,1) ) # matrix_Ax
-A = matriz[:][:-1]
-b = np.arange(1)
-b = matriz[:][len(matriz[1])-1]
-
-I_b = np.arange(1) #indice das variáveis que estão na partição básica
-I_n = np.arange(1) #indice das variáveis que estão na partição não básica
-A_inv = np.zeros( (1,1) )
-
-I_b, I_n=obter_particoes(A, b)
-
-
-B = np.zeros( (1,1) ) #Matrix_Básica
-print(B.T)
-
-# resolvendo sistema de equações lineares:
-# Solve the system of equations x0 + 2 * x1 = 1 and 3 * x0 + 5 * x1 = 2:
-# a = np.array([[1, 2], [3, 5]])
-# b = np.array([1, 2])
-# x = np.linalg.solve(a, b)
-# x
-
-N = np.zeros( (1,1) ) # matrix_NãoBásica
-a_n = np.arange(1) # a_n[] são as colunas de N
-x = np.arange(1)
-
-if x_x_b >= 0:
-    print("solução básica viável")
-Lambda = np.arange(1) # vetor multiplicador simplex
-lambda_t = c_b.getT().dot(B_inv)
-c = np.arange(1) # vetor de custos
-c_b = np.arange(1)  # vetor de coeficientes das variáveis básicas
-c_n = np.arange(1) # vetor de coeficientes das variáveis não básicas
-# custos relativos não básicos
-c_xapeu_n = c_n[:] - np.multiply(Lambda.T,a_n[:])
-y = np.arange(1) # direção do simplex
-y[:] = np.multiply(np.linalg.inv(B),N[:]) # Errado. quero pegar as colunas de N
-c_xapeu_k = np.arange(1) # teste de otimalidade nas não básicas
- min{c_n}
-E_xapeu = np.arange(1)
-E_xapeu[:] = x_x_b[:]/y[:]
-# np.linalg.inv(B)
-
-"""
