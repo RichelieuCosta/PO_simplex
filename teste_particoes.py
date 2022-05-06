@@ -160,11 +160,17 @@ def primal_simplex(A, b, c_t, I_b, I_n):
         return c_xapeu_n, I_b, I_n
 
     print("não foi dessa vez")
-    x_b_l = x_x_b[:]/y[:]
+    x_b_l = np.arange(len(y))
+    for i in range(len(y)):
+        if y[i] != 0:
+            x_b_l[i] = x_x_b[i]/y[i]
+
+    #x_b_l = x_x_b[:]/y[:]
     print("xxbl: ", x_b_l)
     for l in range(len(I_b)):
-        if x_b_l.min() == x_b_l[l]:
-            print("A variável a sair da base será: ", I_n[l], "de index: ", l)
+        print("checando o lanço para sair da fase 2")
+        if x_b_l.min() == x_b_l[l] and y[l] != 0:
+            print("A variável a sair da base será: ", I_b[l], "de index: ", l)
             index_sair = l
 
     aux_troca = I_b[index_sair]
@@ -174,13 +180,13 @@ def primal_simplex(A, b, c_t, I_b, I_n):
 
 
 print("oxente 1 ")
-c_t = np.array([2, 4, 1, 0, 0])
+c_t = np.array([-2, -1, 0, 0, 0])
 A = np.array([[1, 1, 1, 0, 0],
-              [1, -1, 0, 1, 0],
-              [3, 1, 0, 0, -1]])
+              [1, 0, 0, 1, 0],
+              [0, 1, 0, 0, 1]])
 
 
-b = np.array([6, 4, 3])
+b = np.array([4, 3, 7/2])
 
 
 print("oxente 2 ")
