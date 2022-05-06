@@ -391,9 +391,9 @@ def resolver_por_primal(A, b, c_t):
 
 
 def resolver_por_dual(A, b, c_t):
-    I_b, I_n = obter_particoes_iniciais(A, b)
+    I_b, I_n = obter_particoes_iniciais(np.matrix(A).getT(), b)
 
-    dual_simplex(A, c_t, b, I_b, I_n)
+    dual_simplex(np.matrix(A).getT(), c_t, b, I_b, I_n)
 
     return
 
@@ -416,7 +416,7 @@ A = np.array([[4/5, 2/5, 0],
              [0, 3/5, 9/9]])
 b = np.array([108, 120])
 
-escrever_problema_primal(A, c_t, b)
+#escrever_problema_primal(A, c_t, b)
 escrever_problema_dual(A, c_t, b)
 
 #print("primal: ", resolver_por_primal(A, b, c_t))
