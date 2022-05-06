@@ -11,7 +11,7 @@ from itertools import combinations
 def atualizeBN(A, I_b, I_n):
     B = []
     N = []
-
+    print("cuidado agora!!!")
     for linhaA in A:
         linhaB = []
         linhaN = []
@@ -25,7 +25,7 @@ def atualizeBN(A, I_b, I_n):
             linhaN.append(linhaA[j-1])
             # print(linhaN)
         N.append(linhaN)
-
+    print(np.matrix(N).getT().getT())
     return np.asarray(B), np.asarray(N)
 
 
@@ -75,20 +75,24 @@ def obter_particoes_iniciais(A, b):
 def obter_custos(I_b, I_n, c_t):
     c_b = []
     c_n = []
+    # print("atenção, para tudo!!!") # Alarme falso
 
     for i in I_b:
+
         c_b.append(c_t[i-1])
     for i in I_n:
         c_n.append(c_t[i-1])
-
+    # print(c_b)
+    # print(c_n)
     return c_b, c_n
 
 
 def obter_coluna(M, j):
     coluna = []
     for linha in M:
-        coluna.append(linha[j-1])
-    # print("função de obter coluna")
+        coluna.append(linha[j])  # coluna.append(linha[j-1]) #errei feio aqui.
+    print("função de obter coluna")
+    print("Perdi a minha noite inteira por conta dessa porqueira")
     # print(coluna)
     # print(np.matrix(coluna).getT())
 
@@ -127,17 +131,20 @@ def primal_simplex(A, b, c_t, I_b, I_n):
 
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
+    print("custos das variáves básicas: ", c_b)
     lambda_t = np.matrix(c_b).dot(B_inv)
 
     print("valor de lambda: ", lambda_t)
-
+    print(N)
     c_xapeu_n = np.arange(len(I_n))
     for j in range(len(I_n)):
         # custos relativos não básicos
+        print("c_n[", j, "]: ", c_n[j])
+        print("Coluna ", j, " de N: ", obter_coluna(N, j))
         c_xapeu_n[j] = c_n[j] - lambda_t.dot(obter_coluna(N, j))
         # print("c chapeu J:", j, c_xapeu_n[j])
 
-    print("c xapeu", c_xapeu_n)
+    print("c xapeu n", c_xapeu_n)
 
     y = np.arange(len(A))
 
@@ -195,8 +202,10 @@ A = np.array([[1, 1, 1, 0, 0],
 b = np.array([4, 3, 7/2])
 
 
-I_b, I_n = obter_particoes_iniciais(A, b)
+#I_b, I_n = obter_particoes_iniciais(A, b)
 
+I_b = [3, 1, 5]
+I_n = [4, 2]
 
 x = 0
 while(x == 0):
