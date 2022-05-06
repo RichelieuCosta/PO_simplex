@@ -4,8 +4,8 @@ from itertools import combinations
 # 1) escrever modelo dual na tela - OK
 # 2) simplex  -  ok
 # 3) determinar valores da solução primal -  ok
-# 4) determinar valores da solução dual - acho que vai ser super tranquilo depois de terminar de checar o primal
-# 5) determinar ranges do lado direito - checar slides de anand pra comparar com anotações da disciplna da graduação
+# 4) determinar valores da solução dual - pendente de correção, atualização de nomes das variaveis dual e conclusão.
+# 5) determinar ranges do lado direito - pendente.
 
 
 def atualizeBN(A, I_b, I_n):
@@ -30,14 +30,14 @@ def atualizeBN(A, I_b, I_n):
 
 
 def obter_particoes_iniciais(A, b):
-
-    len(A)
+    print("OBTENDO PARTIÇÔES iniciais")
+    # len(A)
     I_b = []
     I_n = []
 
     n = len(A[1])
     m = len(A)
-
+    print(n, m)
     lista_aux = np.arange(n)  # inicia vetor pelo valor 0
     lista_aux += 1  # Para começar pelo valor 1
 
@@ -50,7 +50,7 @@ def obter_particoes_iniciais(A, b):
             for j in i_b:
                 # print(j)
                 linhaB.append(linhaA[j-1])
-                # print(linhaB)
+                print(linhaB)
             B.append(linhaB)
 
         Binv = np.linalg.inv(np.matrix(B))
@@ -267,6 +267,7 @@ def dual_simplex(A, b, c_t):  # , I_b, I_n):
     print(B)
     print("matriz não básica:")
     print(N)
+    B_t = np.matrix(B).getT()
     B_inv = np.linalg.inv(B)
     print("B_inv:")
     print(B_inv)
@@ -295,11 +296,11 @@ def dual_simplex(A, b, c_t):  # , I_b, I_n):
         for k in range(len(I_n)):
             print("valor de k: ", k)
             if c_xapeu_n[k] < 0:
-                print("a kaézima variável não básica vai entrar na base?")
+                print("a kaézima variável não básica vai sair na base?")
                 if c_xapeu_n.min() == c_xapeu_n[k]:
                     print(
-                        "a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
-                    index_entrar = k
+                        "a kaézima variável não básica VAI sair, que é a variável: ", I_n[k])
+                    index_sair = k
                     for k in range(len(I_n)):
                         y = B_inv.dot(obter_coluna(N, k))
                     print("y: ", y)
@@ -323,17 +324,26 @@ def dual_simplex(A, b, c_t):  # , I_b, I_n):
     print("não foi dessa vez. Próxima iteração!")
     print("x_x_b: ", x_x_b)
     epsilon_xapeu = np.arange(len(y))
-    for i in range(len(y)):
-        if y[i] > 0:
-            epsilon_xapeu[i] = x_x_b[i]/y[i]
-
-    aux_MIN_epsilon_xapeu = 0
-    index_sair = 0
-    for i in range(len(y)):
-        if y[i] > 0:
-            # por falta de prática com python, escolhi essa forma de pegar o menor valor de epsilon_xapeu
-            aux_MIN_epsilon_xapeu = epsilon_xapeu[i]
-            index_sair = i
+    for i in range(len(I_b)):
+      # for j in range(len(I_b)):
+        # if y[i] > 0:
+        # EESSA MULTIPLICAÇÃO PODE DAR ERRADO !!!!!!!!!!!!
+        epsilon_xapeu[i] = B_t[i][i]*1*(-1)
+    denominador_calc_sigma = []
+    for j in range(len(I_n)):
+        denominador_calc_sigma[j] = epsilon_xapeu.dot(obter_coluna(N, j))
+    aux_MIN_sigma_xapeu = 0
+    index_entrar = 0
+    aux_sigma = c_n[:]/denominador_calc_sigma[:]
+    aux_MIN_sigma_xapeu = aux_sigma[0]
+    index_entrar = 0
+    for i in range(len(I_n)):
+        if aux_sigma[i] < aux_MIN_sigma_xapeu:
+            index_entrar = i
+            aux_MIN_sigma_xapeu = aux_sigma[i]
+        # por falta de prática com python, escolhi essa forma de pegar o menor valor de epsilon_xapeu
+    #aux_MIN_epsilon_xapeu = epsilon_xapeu[i]
+    #index_sair = i
 
     for i in range(len(y)):
         if y[i] > 0 and epsilon_xapeu[i] < aux_MIN_epsilon_xapeu:
@@ -391,9 +401,9 @@ def resolver_por_primal(A, b, c_t):
 
 
 def resolver_por_dual(A, b, c_t):
-    I_b, I_n = obter_particoes_iniciais(np.matrix(A).getT(), b)
+    #I_b, I_n = obter_particoes_iniciais(np.matrix(A).getT(), b)
 
-    dual_simplex(np.matrix(A).getT(), c_t, b, I_b, I_n)
+    dual_simplex(np.matrix(A).getT(), c_t, b)  # , I_b, I_n)
 
     return
 
@@ -416,9 +426,12 @@ A = np.array([[4/5, 2/5, 0],
              [0, 3/5, 9/9]])
 b = np.array([108, 120])
 
-#escrever_problema_primal(A, c_t, b)
+print(c_t)
+print(A)
+print(b)
+escrever_problema_primal(A, c_t, b)
 escrever_problema_dual(A, c_t, b)
 
-#print("primal: ", resolver_por_primal(A, b, c_t))
+print("primal: ", resolver_por_primal(A, b, c_t))
 
-# print("Dual: ", resolver_por_dual(np.matrix(A).getT(), c_t, b,))
+#print("Dual: ", resolver_por_dual(np.matrix(A).getT(), c_t, b))
