@@ -35,16 +35,26 @@ def obter_particoes_iniciais(A, b):
     # len(A)
     I_b = []
     I_n = []
-
-    n = len(A[1])
+    print("Olha quem é A:")
+    print(A)
+    #print()
+    #print(len(A[:,1]))
+    #print(len(A[1,:]))
+    #print(len(A[1]))
+    #print(A[0][0])
+    #print(A[1][0])
+    n = len(A[0])
     m = len(A)
     print(n, m)
     lista_aux = np.arange(n)  # inicia vetor pelo valor 0
     lista_aux += 1  # Para começar pelo valor 1
+    print("lista_aux")
+    print(lista_aux)
 
     comb = combinations(lista_aux, m)
-
+    
     for i_b in comb:
+        #print(i_b)
         B = []
         for linhaA in A:
             linhaB = []
@@ -426,7 +436,11 @@ def resolver_por_primal(A, b, c_t):
 
 
 def resolver_por_dual(A, b, c_t):
-    A_tansposta= np.matrix(A).getT()
+    print(A)
+    print("olha a quantidade de colunas")
+    print(len(A[0]))
+    A_tansposta= A.transpose()
+    print(A_tansposta)
     I_b, I_n = obter_particoes_iniciais(A_tansposta, b)
 
     
@@ -496,4 +510,4 @@ escrever_problema_dual(A, c_t, b)
 
 print("primal: ", resolver_por_primal(A, b, c_t))
 
-#print("Dual: ", resolver_por_dual(A, c_t, b))
+#print("Dual: ", resolver_por_dual(A, c_t, b)) # A FORMA DE OBTER AS BASES INICIAIS NÃO FUNCIONA COMO É FEITO NO PRIMAL
