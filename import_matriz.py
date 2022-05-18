@@ -13,6 +13,16 @@ print("vetor texto -> ", texto)  # aqui eu mostro
 aux = texto.split('=')
 print(aux[0], '=', aux[1])
 
+auxiliar_custos= re.findall(r'.[.\w\d]*', aux[1])
+print(auxiliar_custos)
+for i in range(len(auxiliar_custos)-1):
+
+    #print(i)
+    if i % 2 == 0: # pegando só os indeces pares.
+        #print(i)
+        print(auxiliar_custos[i])
+    
+
 texto = arq.readline()
 print(texto)
 if texto == "sujeito a:\n":
