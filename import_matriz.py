@@ -16,8 +16,9 @@ print(aux[0], '=', aux[1])
 auxiliar_custos= re.findall(r'.[.\w\d]*', aux[1])
 # append
 # lista_aux = np.arange(n)
+v_v = []
 c_t = np.arange((len(auxiliar_custos)-1)/2)
-print("olha o tamanho do vetor: ",len(c_t))
+print("olha o tamanho dos vetores: ",len(c_t), len(v_v) )
 print(auxiliar_custos)
 for i in range(len(auxiliar_custos)-1):
 
@@ -27,8 +28,12 @@ for i in range(len(auxiliar_custos)-1):
         print(int(auxiliar_custos[i]))
         c_t[int(i/2)]=int(auxiliar_custos[i])
         #print("dividindo i por 2: ", i/2)
+    else:
+        #print("Olha o valor no else", int((i-1)/2))
+        v_v.append(auxiliar_custos[i])
 
 print("vetor de custos: ", c_t)
+print("vetor de variáveis: ", v_v)
 
 texto = arq.readline()
 print(texto)
@@ -64,14 +69,36 @@ while(texto != None):
         result = re.findall(r'.[.\w\d]*', restricao[0])
         print(result)  # ['5', '*x1', '+2', '*x2']
         linha = []
-        for i in range(len(result)-1):
+        i=1
+        print("olha o meu print aleatório: ", (len(result)-1))
+        while (i<=(len(result))):
+        ##for i in range(len(result)-1):
+            print("Mostrando variação do indice i ", i)
+            # i += 1
+            # inicio do pensamento atual
 
+            for j in range(int((i-1)/2), (len(v_v)), 1):
+                print("result[i] :", result[i], "\n v_v[j]:", v_v[j])
+                if result[i]==v_v[j]:
+                    linha.append(int(result[i-1]))
+                    break
+                else:
+                    linha.append(0)
+            i +=2
+
+            # fim do pensamento atual
             #print(i)
+
+            """
+            ### inicio de comentário em bloco
             if i % 2 == 0: # pegando só os indeces pares.
                 #print(i)
                 linha.append(int(result[i]))
                 print(linha)
                 #print("dividindo i por 2: ", i/2)
+
+            ### fim de comentário em bloco
+            """
         print("PROBLEMA A SER RESOLVIDO FACILMENTE: RESTRIÇÕES ESTÃO SENDO MONTADAS ERRONEAMENTE QUANDO AS PRIMEIRAS \n variaveis não estão na restrição.")
         if(len(linha)<len(c_t)):
             for i in range(len(c_t)-len(linha)):
