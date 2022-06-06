@@ -48,8 +48,8 @@ def obter_particoes_iniciais(A, b):
     # len(A)
     I_b = []
     I_n = []
-    print("Olha quem é A:")
-    print(A)
+    #print("Olha quem é A:")
+    #print(A)
     #print()
     #print(len(A[:,1]))
     #print(len(A[1,:]))
@@ -58,11 +58,11 @@ def obter_particoes_iniciais(A, b):
     #print(A[1][0])
     n = len(A[0])
     m = len(A)
-    print(n, m)
+    #print(n, m)
     lista_aux = np.arange(n)  # inicia vetor pelo valor 0
     lista_aux += 1  # Para começar pelo valor 1
-    print("lista_aux")
-    print(lista_aux)
+    #print("lista_aux")
+    #print(lista_aux)
 
     comb = combinations(lista_aux, m)
     
@@ -74,24 +74,24 @@ def obter_particoes_iniciais(A, b):
             for j in i_b:
                 # print(j)
                 linhaB.append(linhaA[j-1])
-                print(linhaB)
+                #print(linhaB)
             B.append(linhaB)
 
         Binv = np.linalg.inv(np.matrix(B))
         x_x_b = []  # solução_avaliada
-        print(Binv)
-        print(b)
+        #print(Binv)
+        #print(b)
         x_x_b = Binv.dot(np.matrix(b).getT())
-        print("O x chapeu: ", x_x_b)
+        #print("O x chapeu: ", x_x_b)
         aux_menor = x_x_b[0]
         # if x_x_b.min() >= 0:
         for x_x_b_i in x_x_b:
             if x_x_b_i < aux_menor:
                 aux_menor = x_x_b_i
         if aux_menor >= 0:
-            print("Conjunto legal pra iniciar!!", i_b)
-            print("O x chapeu que passou: ")
-            print(x_x_b)
+            print("Conjunto legal pra iniciar na base!!", i_b)
+            #print("O x chapeu que passou: ")
+            #print(x_x_b)
             for i_n in lista_aux:
                 if i_b.count(i_n) == 0:
                     # print(i_n, " Não está está na partição básica")
@@ -164,58 +164,58 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     # m # numero de equações
     # n # número de variáveis
 
-    print("partições básicas:")
-    print(I_b)
-    print("partições não básicas:")
-    print(I_n)
+    #print("partições básicas:")
+    #print(I_b)
+    #print("partições não básicas:")
+    #print(I_n)
 
     B, N = atualizeBN(A, I_b, I_n)
     c_b, c_n = obter_custos(I_b, I_n, c_t)
 
-    print("b:")
+    #print("b:")
 
-    print(np.matrix(b).getT())
+    #print(np.matrix(b).getT())
 
-    print("matriz Básica:")
-    print(B)
-    print("matriz não básica:")
-    print(N)
+    #print("matriz Básica:")
+    #print(B)
+    #print("matriz não básica:")
+    #print(N)
     B_inv = np.linalg.inv(B)
-    print("B_inv:")
-    print(B_inv)
+    #print("B_inv:")
+    #print(B_inv)
 
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
-    print("custos das variáves básicas: ", c_b)
-    print("custos das variáves não básicas: ", c_n)
+    #print("custos das variáves básicas: ", c_b)
+    #print("custos das variáves não básicas: ", c_n)
     lambda_t = np.matrix(c_b).dot(B_inv)
 
-    print("valor de lambda: ", lambda_t)
-    print(N)
+    #print("valor de lambda: ", lambda_t)
+   # print(N)
     c_xapeu_n = np.arange(len(I_n))
     for j in range(len(I_n)):
         # custos relativos não básicos
-        print("c_n[", j, "]: ", c_n[j])
-        print("Coluna ", j, " de N: ", obter_coluna(N, j))
+        #print("c_n[", j, "]: ", c_n[j])
+        #print("Coluna ", j, " de N: ", obter_coluna(N, j))
         c_xapeu_n[j] = c_n[j] - lambda_t.dot(obter_coluna(N, j))
         # print("c chapeu J:", j, c_xapeu_n[j])
 
-    print("c xapeu n", c_xapeu_n)
+    #print("c xapeu n", c_xapeu_n)
 
     y = np.arange(len(A))
 
     if c_xapeu_n.min() < 0:
         for k in range(len(I_n)):
-            print("valor de k: ", k)
+            #print("valor de k: ", k)
             if c_xapeu_n[k] < 0:
-                print("a kaézima variável não básica vai entrar na base?")
+                #print("a kaézima variável não básica vai entrar na base?")
                 if c_xapeu_n.min() == c_xapeu_n[k]:
-                    print(
-                        "a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
+                    #print(
+                        #"a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
                     index_entrar = k
                     for k in range(len(I_n)):
                         y = B_inv.dot(obter_coluna(N, k))
-                    print("y: ", y)
+                    #print("y: ", y)
                     aux_count = 0
                     for y_i in y:
                         if y_i <= 0:
@@ -226,7 +226,8 @@ def primal_simplex(A, b, c_t, I_b, I_n):
                     break
 
                 else:
-                    print("a kaézima variável não básica NÃO vai entrar")
+                    print(" ")
+                    #print("a kaézima variável não básica NÃO vai entrar")
             else:
                 print("acho que deu certo!! será??")
     else:
@@ -234,7 +235,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
         return c_xapeu_n, I_b, I_n, x_x_b
 
     print("não foi dessa vez. Próxima iteração!")
-    print("x_x_b: ", x_x_b)
+    #print("x_x_b: ", x_x_b)
     epsilon_xapeu = np.arange(len(y))
     for i in range(len(y)):
         if y[i] > 0:
@@ -394,14 +395,17 @@ def dual_simplex(A, b, c_t , I_b, I_n):
         print("Solução ótima, acabou!")
         return c_xapeu_n, I_b, I_n, x_x_b
 
-def obter_solucao_dual_dada_primal(B,c_b): # I_b, c_t
+def obter_solucao_dual_dada_primal(B,c_b, b): # I_b, c_t
 
     #B_inv.dot(np.matrix(b).getT())
     B_inv_t = np.matrix(np.linalg.inv(B)).getT()
     lambda_xapeu = B_inv_t.dot(np.matrix(c_b).getT())
-    print("lambda xapeu (solução do dual):")
-    print(lambda_xapeu)
+    #print("Eu na área dando print")
+    print("lambda xapeu (solução do dual):", lambda_xapeu)
+    #print(lambda_xapeu)
     #Aula 12 - dual 
+
+    print("valor da solução ótima do dual: ", np.matrix(lambda_xapeu).getT().dot(b))
 
     return lambda_xapeu
 
@@ -439,13 +443,13 @@ def resolver_por_primal(A, b, c_t):
     # print(x_final)
 
     print("vetor X na sequencia original: ", x_final)
-    print("vetor de custos: ", c_t)
+    #print("vetor de custos: ", c_t)
     print("valor da solução ótima: ", x_final.dot(c_t))
 
     B, N = atualizeBN(A, I_b, I_n)
     
     c_b, c_n = obter_custos(I_b, I_n, c_t)
-    obter_solucao_dual_dada_primal(B,c_b)
+    obter_solucao_dual_dada_primal(B,c_b,b)
 
     return B, x_final
 
@@ -700,7 +704,7 @@ A, b, c_t, igualdades_restricoes = carregar_de_arquivo('arquivo.txt')
 escrever_problema_primal(A, c_t, b)
 escrever_problema_dual(A, c_t, b)
 B, solucao_otima = resolver_por_primal(A, b, c_t)
-print("primal: ", solucao_otima)
+#print("primal: ", solucao_otima)
 
 analise_variacao_qtd_recursos(B, b)
 
