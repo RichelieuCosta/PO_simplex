@@ -4,6 +4,8 @@ from ctypes import c_bool
 from imp import is_builtin
 import re
 import fractions
+from sympy.solvers.inequalities import reduce_rational_inequalities
+from sympy import Matrix, symbols
 
 # 1) escrever modelo dual na tela - OK
 # 2) simplex  -  ok
@@ -11,13 +13,13 @@ import fractions
 # 3.1) determinar valores da solução dual a partir da primal - ok
 # 4) determinar valores da solução dual - ok
 #  atualização de nomes das variaveis dual e conclusão. - ok
-# 5) determinar ranges do lado direito - pendente.
+# 5) determinar ranges do lado direito - OK.
 ## O que dá pra fazer:
-#1. Variações nas quantidades de recursos;
-#2. Variações nos coeficientes da função objetivo;
-#3. Variações nos coeficientes das atividades;
-#4. Acréscimo de uma nova restrições
-#5. Acréscimo de uma nova variável.
+#1. Variações nas quantidades de recursos; - OK
+#2. Variações nos coeficientes da função objetivo; - pode ser feito
+#3. Variações nos coeficientes das atividades;- pode ser feito
+#4. Acréscimo de uma nova restrições.- pode ser feito
+#5. Acréscimo de uma nova variável.- pode ser feito
 
 
 def atualizeBN(A, I_b, I_n):
@@ -445,7 +447,7 @@ def resolver_por_primal(A, b, c_t):
     c_b, c_n = obter_custos(I_b, I_n, c_t)
     obter_solucao_dual_dada_primal(B,c_b)
 
-    return x_final
+    return B, x_final
 
 
 def resolver_por_dual(A, b, c_t):
@@ -489,6 +491,29 @@ def resolver_por_dual(A, b, c_t):
     print("vetor de custos: ", c_t)
     print("valor da solução ótima: ", x_final.dot(c_t))
     return x_final
+
+def analise_variacao_qtd_recursos(B, b):
+    
+    z = symbols('Z', extended_real=True)
+    Binv = Matrix(np.asarray(np.linalg.inv(np.matrix(B))))
+    tupas_variacoes = []
+    for i in range(len(b)):
+            
+        b_2=Matrix(b)
+        b_2[i]+=z
+        equa = Binv*b_2
+        inequacao =[]
+        for linha in equa:
+            inequacao.append((linha,">"))
+        inequacao2 = []
+        inequacao2.append(inequacao)
+        #print(inequacao2)
+        result = reduce_rational_inequalities(inequacao2, z)
+        print("Uma variação admissível no recurso", i, " do problema primal é somar um valor Z, desde que:", result)
+       
+        tupas_variacoes.append(result)
+
+    return tupas_variacoes
 
 def carregar_de_arquivo(caminho):
 
@@ -640,7 +665,7 @@ def carregar_de_arquivo(caminho):
 
 
 
-    return A, b, c_t
+    return A, b, c_t, igualdades_restricoes
 
 # c_t = np.array([-2, -1, 0, 0, 0])
 # A = np.array([[1, 1, 1, 0, 0],
@@ -664,7 +689,7 @@ def carregar_de_arquivo(caminho):
 #A = np.array([[2, 1, -1, 0],
 #             [1, 3, 0, -1]])
 #b = np.array([4, 3])
-A, b, c_t = carregar_de_arquivo('arquivo.txt')
+A, b, c_t, igualdades_restricoes = carregar_de_arquivo('arquivo.txt')
 # Atenção, o parse não aceita frações. para corrigir isso, 
 # modificar a expressão regular que pega os coeficientes
 
@@ -674,7 +699,9 @@ A, b, c_t = carregar_de_arquivo('arquivo.txt')
 
 escrever_problema_primal(A, c_t, b)
 escrever_problema_dual(A, c_t, b)
+B, solucao_otima = resolver_por_primal(A, b, c_t)
+print("primal: ", solucao_otima)
 
-print("primal: ", resolver_por_primal(A, b, c_t))
+analise_variacao_qtd_recursos(B, b)
 
 #print("Dual: ", resolver_por_dual(A, c_t, b)) # A FORMA DE OBTER AS BASES INICIAIS NÃO FUNCIONA COMO É FEITO NO PRIMAL
