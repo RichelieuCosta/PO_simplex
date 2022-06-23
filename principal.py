@@ -14,12 +14,12 @@ from sympy import Matrix, symbols
 # 4) determinar valores da solução dual - ok
 #  atualização de nomes das variaveis dual e conclusão. - ok
 # 5) determinar ranges do lado direito - OK.
-## O que dá pra fazer:
-#1. Variações nas quantidades de recursos; - OK
-#2. Variações nos coeficientes da função objetivo; - pode ser feito
-#3. Variações nos coeficientes das atividades;- pode ser feito
-#4. Acréscimo de uma nova restrições.- pode ser feito
-#5. Acréscimo de uma nova variável.- pode ser feito
+# O que dá pra fazer:
+# 1. Variações nas quantidades de recursos; - OK
+# 2. Variações nos coeficientes da função objetivo; - pode ser feito
+# 3. Variações nos coeficientes das atividades;- pode ser feito
+# 4. Acréscimo de uma nova restrições.- pode ser feito
+# 5. Acréscimo de uma nova variável.- pode ser feito
 
 
 def atualizeBN(A, I_b, I_n):
@@ -48,41 +48,41 @@ def obter_particoes_iniciais(A, b):
     # len(A)
     I_b = []
     I_n = []
-    #print("Olha quem é A:")
-    #print(A)
-    #print()
-    #print(len(A[:,1]))
-    #print(len(A[1,:]))
-    #print(len(A[1]))
-    #print(A[0][0])
-    #print(A[1][0])
+    # print("Olha quem é A:")
+    # print(A)
+    # print()
+    # print(len(A[:,1]))
+    # print(len(A[1,:]))
+    # print(len(A[1]))
+    # print(A[0][0])
+    # print(A[1][0])
     n = len(A[0])
     m = len(A)
-    #print(n, m)
+    # print(n, m)
     lista_aux = np.arange(n)  # inicia vetor pelo valor 0
     lista_aux += 1  # Para começar pelo valor 1
-    #print("lista_aux")
-    #print(lista_aux)
+    # print("lista_aux")
+    # print(lista_aux)
 
     comb = combinations(lista_aux, m)
-    
+
     for i_b in comb:
-        #print(i_b)
+        # print(i_b)
         B = []
         for linhaA in A:
             linhaB = []
             for j in i_b:
                 # print(j)
                 linhaB.append(linhaA[j-1])
-                #print(linhaB)
+                # print(linhaB)
             B.append(linhaB)
 
         Binv = np.linalg.inv(np.matrix(B))
         x_x_b = []  # solução_avaliada
-        #print(Binv)
-        #print(b)
+        # print(Binv)
+        # print(b)
         x_x_b = Binv.dot(np.matrix(b).getT())
-        #print("O x chapeu: ", x_x_b)
+        # print("O x chapeu: ", x_x_b)
         aux_menor = x_x_b[0]
         # if x_x_b.min() >= 0:
         for x_x_b_i in x_x_b:
@@ -90,8 +90,8 @@ def obter_particoes_iniciais(A, b):
                 aux_menor = x_x_b_i
         if aux_menor >= 0:
             print("Conjunto legal pra iniciar na base!!", i_b)
-            #print("O x chapeu que passou: ")
-            #print(x_x_b)
+            # print("O x chapeu que passou: ")
+            # print(x_x_b)
             for i_n in lista_aux:
                 if i_b.count(i_n) == 0:
                     # print(i_n, " Não está está na partição básica")
@@ -164,58 +164,58 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     # m # numero de equações
     # n # número de variáveis
 
-    #print("partições básicas:")
-    #print(I_b)
-    #print("partições não básicas:")
-    #print(I_n)
+    # print("partições básicas:")
+    # print(I_b)
+    # print("partições não básicas:")
+    # print(I_n)
 
     B, N = atualizeBN(A, I_b, I_n)
     c_b, c_n = obter_custos(I_b, I_n, c_t)
 
-    #print("b:")
+    # print("b:")
 
-    #print(np.matrix(b).getT())
+    # print(np.matrix(b).getT())
 
-    #print("matriz Básica:")
-    #print(B)
-    #print("matriz não básica:")
-    #print(N)
+    # print("matriz Básica:")
+    # print(B)
+    # print("matriz não básica:")
+    # print(N)
     B_inv = np.linalg.inv(B)
-    #print("B_inv:")
-    #print(B_inv)
+    # print("B_inv:")
+    # print(B_inv)
 
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
-    #print("custos das variáves básicas: ", c_b)
-    #print("custos das variáves não básicas: ", c_n)
+    # print("custos das variáves básicas: ", c_b)
+    # print("custos das variáves não básicas: ", c_n)
     lambda_t = np.matrix(c_b).dot(B_inv)
 
-    #print("valor de lambda: ", lambda_t)
+    # print("valor de lambda: ", lambda_t)
    # print(N)
     c_xapeu_n = np.arange(len(I_n))
     for j in range(len(I_n)):
         # custos relativos não básicos
-        #print("c_n[", j, "]: ", c_n[j])
-        #print("Coluna ", j, " de N: ", obter_coluna(N, j))
+        # print("c_n[", j, "]: ", c_n[j])
+        # print("Coluna ", j, " de N: ", obter_coluna(N, j))
         c_xapeu_n[j] = c_n[j] - lambda_t.dot(obter_coluna(N, j))
         # print("c chapeu J:", j, c_xapeu_n[j])
 
-    #print("c xapeu n", c_xapeu_n)
+    # print("c xapeu n", c_xapeu_n)
 
     y = np.arange(len(A))
 
     if c_xapeu_n.min() < 0:
         for k in range(len(I_n)):
-            #print("valor de k: ", k)
+            # print("valor de k: ", k)
             if c_xapeu_n[k] < 0:
-                #print("a kaézima variável não básica vai entrar na base?")
+                # print("a kaézima variável não básica vai entrar na base?")
                 if c_xapeu_n.min() == c_xapeu_n[k]:
-                    #print(
-                        #"a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
+                    # print(
+                    # "a kaézima variável não básica VAI entrar, que é a variável: ", I_n[k])
                     index_entrar = k
                     for k in range(len(I_n)):
                         y = B_inv.dot(obter_coluna(N, k))
-                    #print("y: ", y)
+                    # print("y: ", y)
                     aux_count = 0
                     for y_i in y:
                         if y_i <= 0:
@@ -227,7 +227,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
 
                 else:
                     print(" ")
-                    #print("a kaézima variável não básica NÃO vai entrar")
+                    # print("a kaézima variável não básica NÃO vai entrar")
             else:
                 print("acho que deu certo!! será??")
     else:
@@ -235,7 +235,7 @@ def primal_simplex(A, b, c_t, I_b, I_n):
         return c_xapeu_n, I_b, I_n, x_x_b
 
     print("não foi dessa vez. Próxima iteração!")
-    #print("x_x_b: ", x_x_b)
+    # print("x_x_b: ", x_x_b)
     epsilon_xapeu = np.arange(len(y))
     for i in range(len(y)):
         if y[i] > 0:
@@ -265,17 +265,17 @@ def primal_simplex(A, b, c_t, I_b, I_n):
     return c_xapeu_n, I_b, I_n, x_x_b
 
 
+def dual_simplex(A, b, c_t, I_b, I_n):
 
-def dual_simplex(A, b, c_t , I_b, I_n):
-
-    #I_b, I_n = obter_particoes_iniciais(A, b)
+    # I_b, I_n = obter_particoes_iniciais(A, b)
 
     index_entrar = 0
     index_sair = 0
 
     # número de variáveis Primal. O numero de restricoes duais ́e igual ao numero de variáveis X do primal
     n = len(A)
-    m = len(A[1])  # numero de equações do primal que é igual ao número de variaveis do dual
+    # numero de equações do primal que é igual ao número de variaveis do dual
+    m = len(A[1])
     # m
     # n
 
@@ -324,7 +324,7 @@ def dual_simplex(A, b, c_t , I_b, I_n):
     # Passo 2:
 
     # Passo 2.1:
-    
+
     x_x_b = []  # solução_avaliada
     x_x_b = B_inv.dot(np.matrix(b).getT())
 
@@ -358,7 +358,8 @@ def dual_simplex(A, b, c_t , I_b, I_n):
                     e_vetor_canonico[l2] = 1
                 else:
                     e_vetor_canonico[l2] = 0
-            eta[l]=(-1)*(np.matrix(np.linalg.inv(B)).getT().dot(e_vetor_canonico))
+            eta[l] = (-1)*(np.matrix(np.linalg.inv(B)
+                                     ).getT().dot(e_vetor_canonico))
 
         # Passo 4
         denominador_sigma = np.arange(len(I_n))
@@ -381,33 +382,33 @@ def dual_simplex(A, b, c_t , I_b, I_n):
         print("   'epsilon_xapeu': ", epsilon_xapeu)
         print("epsilon_xapeu menor: ", epsilon_xapeu[index_sair])
         print("A variável a sair da base será: ",
-            I_b[index_sair], "de index: ", index_sair)
+              I_b[index_sair], "de index: ", index_sair)
 
         aux_troca = I_b[index_sair]
         I_b[index_sair] = I_n[index_entrar]
         I_n[index_entrar] = aux_troca
         return c_xapeu_n, I_b, I_n, x_x_b
 
-            
-
-
     else:
         print("Solução ótima, acabou!")
         return c_xapeu_n, I_b, I_n, x_x_b
 
-def obter_solucao_dual_dada_primal(B,c_b, b): # I_b, c_t
 
-    #B_inv.dot(np.matrix(b).getT())
+def obter_solucao_dual_dada_primal(B, c_b, b):  # I_b, c_t
+
+    # B_inv.dot(np.matrix(b).getT())
     B_inv_t = np.matrix(np.linalg.inv(B)).getT()
     lambda_xapeu = B_inv_t.dot(np.matrix(c_b).getT())
-    #print("Eu na área dando print")
+    # print("Eu na área dando print")
     print("lambda xapeu (solução do dual):", lambda_xapeu)
-    #print(lambda_xapeu)
-    #Aula 12 - dual 
+    # print(lambda_xapeu)
+    # Aula 12 - dual
 
-    print("valor da solução ótima do dual: ", np.matrix(lambda_xapeu).getT().dot(b))
+    print("valor da solução ótima do dual: ",
+          np.matrix(lambda_xapeu).getT().dot(b))
 
     return lambda_xapeu
+
 
 def resolver_por_primal(A, b, c_t):
     I_b, I_n = obter_particoes_iniciais(A, b)
@@ -443,13 +444,13 @@ def resolver_por_primal(A, b, c_t):
     # print(x_final)
 
     print("vetor X na sequencia original: ", x_final)
-    #print("vetor de custos: ", c_t)
+    # print("vetor de custos: ", c_t)
     print("valor da solução ótima: ", x_final.dot(c_t))
 
     B, N = atualizeBN(A, I_b, I_n)
-    
+
     c_b, c_n = obter_custos(I_b, I_n, c_t)
-    obter_solucao_dual_dada_primal(B,c_b,b)
+    obter_solucao_dual_dada_primal(B, c_b, b)
 
     return B, x_final
 
@@ -458,18 +459,17 @@ def resolver_por_dual(A, b, c_t):
     print(A)
     print("olha a quantidade de colunas")
     print(len(A[0]))
-    A_tansposta= A.transpose()
+    A_tansposta = A.transpose()
     print(A_tansposta)
     I_b, I_n = obter_particoes_iniciais(A_tansposta, b)
-
-    
 
     c_xapeu_n = []
     x_x_b = []
 
     x = 0
     while(x == 0):
-        c_xapeu_n, I_b, I_n, x_x_b = dual_simplex(A_tansposta, c_t, b , I_b, I_n)
+        c_xapeu_n, I_b, I_n, x_x_b = dual_simplex(
+            A_tansposta, c_t, b, I_b, I_n)
         if c_xapeu_n.min() >= 0:
             print("i_b: ", I_b)
             print("i_n: ", I_n)
@@ -496,28 +496,31 @@ def resolver_por_dual(A, b, c_t):
     print("valor da solução ótima: ", x_final.dot(c_t))
     return x_final
 
+
 def analise_variacao_qtd_recursos(B, b):
-    
+
     z = symbols('Z', extended_real=True)
     Binv = Matrix(np.asarray(np.linalg.inv(np.matrix(B))))
     tupas_variacoes = []
     for i in range(len(b)):
-            
-        b_2=Matrix(b)
-        b_2[i]+=z
+
+        b_2 = Matrix(b)
+        b_2[i] += z
         equa = Binv*b_2
-        inequacao =[]
+        inequacao = []
         for linha in equa:
-            inequacao.append((linha,">"))
+            inequacao.append((linha, ">"))
         inequacao2 = []
         inequacao2.append(inequacao)
-        #print(inequacao2)
+        # print(inequacao2)
         result = reduce_rational_inequalities(inequacao2, z)
-        print("Uma variação admissível no recurso", i, " do problema primal é somar um valor Z, desde que:", result)
-       
+        print("Uma variação admissível no recurso", i,
+              "do problema primal, atualmente", b[i], "é somar um valor Z, desde que:", result)
+
         tupas_variacoes.append(result)
 
     return tupas_variacoes
+
 
 def carregar_de_arquivo(caminho):
 
@@ -531,39 +534,40 @@ def carregar_de_arquivo(caminho):
     print()
     print(aux[0], '=', aux[1])
 
-    auxiliar_custos= re.findall(r'.[.\w\d]*', aux[1])
-    # print("olha a auxiliar custos: ",auxiliar_custos)
+    auxiliar_custos = re.findall(r'.[.\w\d]*', aux[1])
+    print("olha a auxiliar custos: ", auxiliar_custos)
     # append
     # lista_aux = np.arange(n)
     v_v = []
-    num_var = int((len(auxiliar_custos))/2) # SUBTRAIR 1 AQUI O AUXILIAR CUSTOS ?
+    # SUBTRAIR 1 AQUI O AUXILIAR CUSTOS ?
+    num_var = int((len(auxiliar_custos))/2)
     # print("Olha a quantidade de variaveis: ", num_var)
-    c_t = [] #np.arange((len(auxiliar_custos)-1)/2)
+    c_t = []  # np.arange((len(auxiliar_custos)-1)/2)
     qtd_var_folgas = 0
     # print("olha o tamanho dos vetores: ",c_t, len(v_v) )
     # print(auxiliar_custos)
-    for i in range(len(auxiliar_custos)): # SUBTRAIR 1 AQUI O AUXILIAR CUSTOS?
+    for i in range(len(auxiliar_custos)):  # SUBTRAIR 1 AQUI O AUXILIAR CUSTOS?
 
-        #print(i)
-        if i % 2 == 0: # pegando só os indeces pares.
-            #print(i)
-            # print(int(auxiliar_custos[i]))
-            c_t.append(int(auxiliar_custos[i]))#[int(i/2)]
-            #print("dividindo i por 2: ", i/2)
+        print(i)
+        if i % 2 == 0:  # pegando só os indeces pares.
+            # print(i)
+            print("olha o valor no if", int(auxiliar_custos[i]))
+            c_t.append(int(auxiliar_custos[i]))  # [int(i/2)]
+            # print("dividindo i por 2: ", i/2)
         else:
-            #print("Olha o valor no else", int((i-1)/2))
+            print("Olha o valor no else", int((i-1)/2))
             v_v.append(auxiliar_custos[i])
 
-    #print("vetor de custos: ", c_t)
-    #c_t=np.asarray(c_t)
-    #print(c_t)
-    #print("vetor de variáveis: ", v_v)
+    # print("vetor de custos: ", c_t)
+    # c_t=np.asarray(c_t)
+    # print(c_t)
+    # print("vetor de variáveis: ", v_v)
 
     texto = arq.readline()
     print(texto)
     if texto == "sujeito a:\n":
         print()
-        #print("sujeito a:")
+        # print("sujeito a:")
     else:
         print("FOrmato inválido")
         exit()
@@ -580,94 +584,94 @@ def carregar_de_arquivo(caminho):
         result = re.search(r',', texto)
         # print(result)
         if result != None:
-            #print("Restrições: ",b)
-            #print(np.asarray(b))
+            # print("Restrições: ",b)
+            # print(np.asarray(b))
             variaveis = texto.split(',')
-            #print("Variação:")
-            #print(variaveis)
+            # print("Variação:")
+            # print(variaveis)
             break
         else:
             # texto = "5*x1+2*x2<=5"
             aux = re.findall(r'=|<=|>=', texto)
             igualdades_restricoes.append(aux)
-            #print(aux)  # ['<=']
+            print(aux)  # ['<=']
             if aux[0] == '=':
                 print()
-                #print("entrei pq a restrição é de igualdade")
+                print("entrei pq a restrição é de igualdade")
             else:
-                qtd_var_folgas+=1
+                qtd_var_folgas += 1
                 #print("aumentar tamanho de c_t")
                 c_t.append(0)
 
             restricao = texto.split(aux[0])
-            #print("Restrição: ", restricao)
+            print("Restrição: ", restricao)
 
             result = re.findall(r'.[.\w\d]*', restricao[0])
-            #print(result)  # ['5', '*x1', '+2', '*x2']
+            print(result)  # ['5', '*x1', '+2', '*x2']
             linha = []
-            i=1
-            #print("olha o meu print aleatório: ", (len(result)-1))
-            while (i<=(len(result))):
-            ##for i in range(len(result)-1):
-                #print("Mostrando variação do indice i ", i)
+            i = 1
+            # print("olha o meu print aleatório: ", (len(result)-1))
+            while (i <= (len(result))):
+                # for i in range(len(result)-1):
+                # print("Mostrando variação do indice i ", i)
                 # i += 1
                 # inicio do pensamento atual
 
                 for j in range(int((i-1)/2), (len(v_v)), 1):
                     #print("result[i] :", result[i], "\n v_v[j]:", v_v[j])
-                    if result[i]==v_v[j]:
+                    if result[i] == v_v[j]:
+                        # print("Dentro da igualdade do if, valor sendo adicionado:", int(
+                        # result[i-1]))
                         linha.append(int(result[i-1]))
                         break
                     else:
                         linha.append(0)
-                i +=2
+                i += 2
 
                 # fim do pensamento atual
-                
-            if(len(linha)<(num_var)):
+
+            if(len(linha) < (num_var)):
                 for i in range(num_var-len(linha)):
                     linha.append(0)
             A.append(linha)
             b.append(float(fractions.Fraction(restricao[1])))
-            #print("matriz A:")
-            #print(A)
-            #print(np.asarray(A))
-            aux_index_b+=1
-            #print(float(fractions.Fraction(restricao[1])))  # 2
-            
-            #print()
+            # print("matriz A:")
+            # print(A)
+            # print(np.asarray(A))
+            aux_index_b += 1
+            # print(float(fractions.Fraction(restricao[1])))  # 2
+
+            # print()
         texto = arq.readline()
     print("vamos prosseguir")
     # igualdades_restricoes
     colunas_adicionadas = 0
     for i, linha in enumerate(A):
 
-        #print(linha, igualdades_restricoes[i])
+        # print(linha, igualdades_restricoes[i])
         for aux in range(colunas_adicionadas):
-            #print("to em colunas adicionadas")
+            # print("to em colunas adicionadas")
             linha.append(0)
 
-        if(len(linha)<(len(c_t)+qtd_var_folgas)):
-            #print("to deixando na forma padrão", igualdades_restricoes[i])
-            #print(igualdades_restricoes[i][0]=='<=')
-            if igualdades_restricoes[i][0]=='<=':
-                #print("adicionando 1")
+        if(len(linha) < (len(c_t)+qtd_var_folgas)):
+            # print("to deixando na forma padrão", igualdades_restricoes[i])
+            # print(igualdades_restricoes[i][0]=='<=')
+            if igualdades_restricoes[i][0] == '<=':
+                # print("adicionando 1")
                 linha.append(1)
-                colunas_adicionadas+=1
-            elif igualdades_restricoes[i][0]=='>=':
-                #print("adicionando -1")
+                colunas_adicionadas += 1
+            elif igualdades_restricoes[i][0] == '>=':
+                # print("adicionando -1")
                 linha.append(-1)
-                colunas_adicionadas+=1
+                colunas_adicionadas += 1
             else:
                 linha.append(0)
-                colunas_adicionadas+=1
+                colunas_adicionadas += 1
             for aux in range(qtd_var_folgas-colunas_adicionadas):
-                #print("resolvendo o lado direito")
+                # print("resolvendo o lado direito")
                 linha.append(0)
-            #print("Terminei uma linha", linha)
-    #print(np.asarray(A))
-
-
+            # print("Terminei uma linha", linha)
+    # print(np.asarray(A))
 
     return A, b, c_t, igualdades_restricoes
 
@@ -678,34 +682,34 @@ def carregar_de_arquivo(caminho):
 # b = np.array([4, 3, 7/2])
 
 
-#c_t = np.array([-3, -5, 0, 0, 0])
+# c_t = np.array([-3, -5, 0, 0, 0])
 # A = np.array([[1, 0, 1, 0, 0],
 #             [0, 1, 0, 1, 0],
 #             [3, 2, 0, 0, 1]])
-#b = np.array([4, 6, 18])
+# b = np.array([4, 6, 18])
 
-#c_t = np.array([1, 1, 1])
-#A = np.array([[4/5, 2/5, 0],
+# c_t = np.array([1, 1, 1])
+# A = np.array([[4/5, 2/5, 0],
 #             [0, 3/5, 9/9]])
-#b = np.array([108, 120])
+# b = np.array([108, 120])
 
-#c_t = np.array([1, 1, 0, 0])
-#A = np.array([[2, 1, -1, 0],
+# c_t = np.array([1, 1, 0, 0])
+# A = np.array([[2, 1, -1, 0],
 #             [1, 3, 0, -1]])
-#b = np.array([4, 3])
+# b = np.array([4, 3])
 A, b, c_t, igualdades_restricoes = carregar_de_arquivo('arquivo.txt')
-# Atenção, o parse não aceita frações. para corrigir isso, 
+# Atenção, o parse não aceita frações. para melhorar,
 # modificar a expressão regular que pega os coeficientes
 
-#print(c_t)
-#print(np.asarray(A))
-#print(np.matrix(b).getT())
+# print(c_t)
+# print(np.asarray(A))
+# print(np.matrix(b).getT())
 
 escrever_problema_primal(A, c_t, b)
 escrever_problema_dual(A, c_t, b)
 B, solucao_otima = resolver_por_primal(A, b, c_t)
-#print("primal: ", solucao_otima)
+# print("primal: ", solucao_otima)
 
 analise_variacao_qtd_recursos(B, b)
 
-#print("Dual: ", resolver_por_dual(A, c_t, b)) # A FORMA DE OBTER AS BASES INICIAIS NÃO FUNCIONA COMO É FEITO NO PRIMAL
+# print("Dual: ", resolver_por_dual(A, c_t, b)) # A FORMA DE OBTER AS BASES INICIAIS NÃO FUNCIONA COMO É FEITO NO PRIMAL
