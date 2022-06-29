@@ -623,9 +623,11 @@ def carregar_de_arquivo(caminho):
                         # print("Dentro da igualdade do if, valor sendo adicionado:", int(
                         # result[i-1]))
                         linha.append(int(result[i-1]))
+                        print("linha atualizada 1", linha)
                         break
                     else:
                         linha.append(0)
+                        print("linha atualizada 2", linha)
                 i += 2
 
                 # fim do pensamento atual
@@ -633,6 +635,7 @@ def carregar_de_arquivo(caminho):
             if(len(linha) < (num_var)):
                 for i in range(num_var-len(linha)):
                     linha.append(0)
+                    print("linha atualizada 3", linha)
             A.append(linha)
             b.append(float(fractions.Fraction(restricao[1])))
             # print("matriz A:")
@@ -652,25 +655,36 @@ def carregar_de_arquivo(caminho):
         for aux in range(colunas_adicionadas):
             # print("to em colunas adicionadas")
             linha.append(0)
-
-        if(len(linha) < (len(c_t)+qtd_var_folgas)):
+            print("linha atualizada 9", linha)
+        #print((len(c_t)+qtd_var_folgas), qtd_var_folgas)
+        if(len(linha) < (len(c_t))):
             # print("to deixando na forma padrão", igualdades_restricoes[i])
             # print(igualdades_restricoes[i][0]=='<=')
             if igualdades_restricoes[i][0] == '<=':
                 # print("adicionando 1")
                 linha.append(1)
+                print("linha atualizada 5", linha)
                 colunas_adicionadas += 1
             elif igualdades_restricoes[i][0] == '>=':
                 # print("adicionando -1")
                 linha.append(-1)
+                print("linha atualizada 6", linha)
                 colunas_adicionadas += 1
             else:
                 linha.append(0)
-                colunas_adicionadas += 1
+                print("linha atualizada 7", linha)
+                #colunas_adicionadas += 1
+                for aux in range(qtd_var_folgas-colunas_adicionadas-1):
+                    # print("resolvendo o lado direito")
+                    linha.append(0)
+                    print("linha atualizada 8", linha)
+                continue
             for aux in range(qtd_var_folgas-colunas_adicionadas):
                 # print("resolvendo o lado direito")
                 linha.append(0)
-            # print("Terminei uma linha", linha)
+                print("linha atualizada 8", linha)
+
+                # print("Terminei uma linha", linha)
     # print(np.asarray(A))
 
     return A, b, c_t, igualdades_restricoes
